@@ -9,14 +9,17 @@ tags:
 
 ## 问题
 
-浏览器关闭事件并不会触发vue实例的beforeDestroy和destroyed函数，因而需要使用window.unload，参见[MDN](https://developer.mozilla.org/zh-CN/docs/Web/Events/unload)。但这两个事件并不支持异步请求。
+问题1：浏览器关闭事件并不会触发vue实例的beforeDestroy和destroyed函数，所以无法在这两个钩子函数中处理浏览器关闭事件。
 
-## 解决方式
+解决方式：注册unload事件，参见[MDN](https://developer.mozilla.org/zh-CN/docs/Web/Events/unload)。
 
-使用navigator.sendBeacon(url, data)，参见[MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/Navigator/sendBeacon)。其中，URL无需特殊处理，与你项目中发送异步请求的URL相同即可。
+问题2：用户代理通常会忽略在unload事件处理器中的异步XMLHttpRequest。
+
+解决方式：使用navigator.sendBeacon(url, data)，参见[MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/Navigator/sendBeacon)
+
+## Vue中的具体实现
 
 ``` javascript
-
 // 在created钩子函数中注册unload事件
 window.addEventListener('unload', this.unloadEvent)
 
